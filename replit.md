@@ -1,6 +1,6 @@
-# [Project name]
+# EduVerse AI
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+EduVerse AI is a student learning companion that connects personalized study help, planning, career discovery, roadmaps, and skill-gap progress.
 
 ## Run & Operate
 
@@ -22,23 +22,29 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/eduverse-ai/src/` — the student-facing React app and its EduVerse UI
+- `artifacts/api-server/src/routes/eduverse.ts` — MVP API handlers and demo student state
+- `lib/api-spec/openapi.yaml` — source of truth for the API contract
+- `artifacts/eduverse-ai/src/index.css` — shared visual theme and typography tokens
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The first release centers on the PRD's core loop rather than trying to ship opportunities, community, gamification, and teacher workflows at once.
+- API contracts are generated from OpenAPI before client work so each primary interaction has a typed path.
+- The MVP uses a seeded in-memory student profile on the API server to keep the prototype immediately usable while later persistence and auth decisions are finalized.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+The MVP supports a personalized dashboard, resource discovery with bookmarks, daily/weekly/monthly study tasks, career matching, roadmap milestones, skill-gap recommendations, an eduGPT study assistant, and profile preferences.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+No additional user preferences recorded.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Run `pnpm --filter @workspace/api-spec run codegen` after changing `lib/api-spec/openapi.yaml`.
+- The web app and API are separate managed workflows; restart both after changes that affect their startup or bundles.
 
 ## Pointers
 

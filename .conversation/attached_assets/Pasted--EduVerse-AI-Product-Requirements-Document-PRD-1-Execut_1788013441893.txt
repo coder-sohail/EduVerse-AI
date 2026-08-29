@@ -1,0 +1,1481 @@
+# EduVerse AI
+## Product Requirements Document (PRD)
+
+---
+
+## 1. Executive Summary
+
+EduVerse AI is an AI-powered education and career platform designed to support students throughout their academic and professional journey.
+
+Instead of treating education, career guidance, skill development, and opportunities as separate products, EduVerse connects them into one personalized ecosystem.
+
+The platform adapts to the student's education level.
+
+### Below Undergraduate
+
+**Learning + Academic Planning + Career Discovery**
+
+### Undergraduate & Above
+
+**Learning + Skills + Career + Opportunities**
+
+EduVerse will combine structured educational resources, AI-powered study assistance, personalized study planning, career roadmaps, skill-gap analysis, scholarships, internships, jobs, communities, contests, events, hackathons, and engagement features.
+
+A dedicated Teacher Portal will provide a separate experience for teachers, with role-based access and tools for supporting and monitoring students.
+
+---
+
+# 2. Problem Statement
+
+Students frequently use multiple disconnected platforms for:
+
+- Learning concepts
+- Finding study material
+- Planning their studies
+- Asking doubts
+- Understanding career options
+- Developing skills
+- Finding scholarships
+- Finding internships/jobs
+- Discovering hackathons and contests
+- Connecting with peers
+
+This creates several problems:
+
+1. Students do not know what they should learn next.
+2. Students struggle to create realistic study plans.
+3. Career decisions are often made without enough information.
+4. Students may not understand the skills required for a target career.
+5. There is a gap between academic learning and career preparation.
+6. Opportunities are scattered across many platforms.
+7. Generic AI assistants do not have enough educational context about the student.
+8. Teachers lack a unified system for managing learning and understanding student progress.
+
+EduVerse aims to connect these disconnected activities into one personalized platform.
+
+---
+
+# 3. Product Vision
+
+> **Build an intelligent education ecosystem that understands where a student is, where they want to go, and continuously helps them move toward that goal.**
+
+EduVerse should answer:
+
+### What should I learn?
+→ Learning Hub + AI Study Assistant
+
+### How should I learn it?
+→ Study Planner + Personalized Learning
+
+### What career could I pursue?
+→ Career Discovery + Career Guidance
+
+### How do I reach that career?
+→ Career Roadmapper
+
+### What am I missing?
+→ Skill Gap Analyzer
+
+### Where can I apply what I've learned?
+→ Projects + Certifications + Opportunities
+
+---
+
+# 4. Goals
+
+## Primary Goals
+
+- Provide personalized educational assistance.
+- Help students plan their academic work.
+- Help students discover suitable careers.
+- Provide structured career roadmaps.
+- Identify skill gaps between current abilities and target careers.
+- Connect learning with career outcomes.
+- Provide relevant scholarships and opportunities.
+- Create an engaging learning environment.
+- Provide teachers with tools to support students.
+- Use AI as an intelligent assistant rather than simply a generic chatbot.
+
+## Secondary Goals
+
+- Encourage consistent learning habits.
+- Increase student engagement.
+- Help students discover opportunities earlier.
+- Create communities around learning and careers.
+- Build a long-term student profile that improves recommendations.
+
+---
+
+# 5. Non-Goals
+
+The initial product will NOT attempt to:
+
+- Replace teachers entirely.
+- Replace universities or schools.
+- Guarantee career outcomes.
+- Make irreversible career decisions for students.
+- Treat AI responses as authoritative without appropriate context.
+- Build a proprietary foundation LLM initially.
+- Build every planned feature simultaneously.
+
+---
+
+# 6. Target Users
+
+## 6.1 Below Undergraduate Students
+
+Examples:
+
+- School students
+- Junior college students
+- Students preparing for academic examinations
+
+Primary needs:
+
+- Understanding subjects
+- Study planning
+- Doubt solving
+- Practice
+- Academic improvement
+- Early career discovery
+
+---
+
+## 6.2 Undergraduate & Above Students
+
+Examples:
+
+- Undergraduate students
+- Postgraduate students
+- Professional-course students
+- Job seekers
+
+Primary needs:
+
+- Learning
+- Skill development
+- Career planning
+- Projects
+- Certifications
+- Internships
+- Jobs
+- Scholarships
+- Hackathons
+- Events
+- Networking
+
+---
+
+## 6.3 Teachers
+
+Teachers require a dedicated Teacher Portal.
+
+Potential needs include:
+
+- Managing classes
+- Managing courses
+- Sharing resources
+- Assigning work
+- Creating quizzes
+- Monitoring student progress
+- Identifying weak areas
+- Communicating with students
+- AI-assisted teaching
+
+The detailed teacher feature set remains to be finalized.
+
+---
+
+# 7. User Roles & Access
+
+EduVerse will initially support:
+
+```text
+EduVerse
+│
+├── Student
+│   └── Student Portal
+│
+└── Teacher
+    └── Teacher Portal
+```
+
+Authentication and authorization must distinguish between these roles.
+
+Students should only access student functionality.
+
+Teachers should have teacher-specific permissions.
+
+Future roles may include administrators and moderators.
+
+---
+
+# 8. Student Onboarding
+
+The onboarding system should collect enough information to personalize the platform.
+
+Potential information includes:
+
+- Name
+- Education level
+- School/college
+- Class/year
+- Stream
+- Subjects
+- Interests
+- Career interests
+- Career goals
+- Location
+- Available study time
+- Learning preferences
+
+The onboarding system should determine the student's primary experience.
+
+```text
+Onboarding
+     ↓
+Education Level
+     ↓
+┌───────────────┬────────────────┐
+↓               ↓
+Below UG       UG & Above
+↓               ↓
+Academic +      Skills +
+Career          Career +
+Discovery       Opportunities
+```
+
+---
+
+# 9. Personalized Dashboard
+
+After onboarding, students should receive a personalized dashboard.
+
+The dashboard may contain:
+
+- Today's study plan
+- Progress
+- Recommended resources
+- Career recommendations
+- Skill-gap alerts
+- Opportunity recommendations
+- Upcoming events
+- Quizzes
+- Streaks
+- Achievements
+- AI recommendations
+
+The dashboard should adapt according to the student's education level and progress.
+
+---
+
+# 10. Learning Hub
+
+The Learning Hub is the central academic content area.
+
+Potential content:
+
+- Subjects
+- Courses
+- Notes
+- Videos
+- PDFs
+- Practice questions
+- Previous-year questions
+- Custom resources
+- Bookmarks
+
+Example:
+
+```text
+Computer Science
+│
+├── Java
+├── Data Structures
+├── DBMS
+├── Operating Systems
+└── Computer Networks
+```
+
+Students should be able to discover and save useful resources.
+
+---
+
+# 11. AI Study Assistant
+
+The AI Study Assistant is one of EduVerse's core features.
+
+Students should be able to ask questions conversationally.
+
+The AI should:
+
+- Explain concepts.
+- Give examples.
+- Simplify difficult topics.
+- Break problems into steps.
+- Generate practice questions.
+- Quiz students.
+- Adapt explanations to student level.
+- Explain mistakes.
+- Provide learning guidance.
+
+The AI should avoid giving unnecessarily advanced explanations to beginners.
+
+The student's education level and context should influence the response.
+
+---
+
+# 12. eduGPT
+
+Working name:
+
+**eduGPT**
+
+The final name may change.
+
+eduGPT should act as the main conversational AI interface.
+
+Basic architecture:
+
+```text
+Student Question
+      ↓
+Context / Intent Understanding
+      ↓
+Relevant Student + Learning Context
+      ↓
+Knowledge Retrieval
+      ↓
+LLM
+      ↓
+Personalized Response
+```
+
+Potential capabilities:
+
+- Doubt solving
+- Concept explanation
+- Examples
+- Step-by-step teaching
+- Practice generation
+- Quizzing
+- Study guidance
+- Career guidance
+
+The LLM should be an intelligence layer, not the application's database or business-logic layer.
+
+---
+
+# 13. Study Planner
+
+EduVerse will contain an AI-assisted Study Planner.
+
+Three planning levels are required:
+
+### Daily
+
+Plan the student's immediate study activities.
+
+### Weekly
+
+Organize subjects/tasks across the week.
+
+### Monthly
+
+Provide longer-term academic planning.
+
+Potential inputs:
+
+- Subjects
+- Exams
+- Deadlines
+- Goals
+- Available time
+- Current progress
+- Weak areas
+- Priorities
+
+Potential outputs:
+
+- Study sessions
+- Tasks
+- Priorities
+- Deadlines
+- Progress tracking
+
+### Important
+
+The detailed planner logic, scheduling algorithm, UI, and exact AI behavior are **not finalized yet**.
+
+These should be designed separately before implementation.
+
+---
+
+# 14. Career Discovery
+
+Career Discovery is especially important for Below UG students.
+
+Students should be able to explore careers based on:
+
+- Interests
+- Subjects
+- Strengths
+- Streams
+- Goals
+
+Example:
+
+```text
+Interested in Computers
+        ↓
+Explore Careers
+        ↓
+AI / ML
+        ↓
+Required Subjects
+        ↓
+Required Skills
+        ↓
+Learning Roadmap
+```
+
+The system should focus on exploration rather than forcing a single career choice.
+
+---
+
+# 15. Career Guidance
+
+EduVerse should use AI and structured career information to recommend suitable career paths.
+
+Recommendations should consider:
+
+- Interests
+- Strengths
+- Subjects
+- Academic background
+- Goals
+- Skills
+
+The system should explain WHY a career may be suitable.
+
+For each career, students should potentially see:
+
+- Career description
+- Required subjects
+- Required skills
+- Education pathways
+- Projects
+- Certifications
+- Learning resources
+- Higher education options
+- Career opportunities
+
+---
+
+# 16. Career Roadmapper
+
+The Career Roadmapper creates a structured path from the student's current position to a target career.
+
+Example:
+
+```text
+Target: AI / ML Engineer
+
+Current Position
+       ↓
+Required Subjects
+       ↓
+Required Skills
+       ↓
+Learning Roadmap
+       ↓
+Projects
+       ↓
+Certifications
+       ↓
+Higher Education
+       ↓
+Internships
+       ↓
+Jobs / Career Opportunities
+```
+
+Roadmaps should be personalized according to the student's current knowledge and goals.
+
+---
+
+# 17. Skill Gap Analyzer
+
+The Skill Gap Analyzer compares a student's current abilities against the requirements of a target career.
+
+Example:
+
+```text
+Target Career: Data Scientist
+
+Statistics       ❌
+Python           ❌
+SQL              ⚠️
+Mathematics      ✅
+Data Viz         ⚠️
+Communication    ✅
+```
+
+The system should then:
+
+1. Identify missing skills.
+2. Identify partially developed skills.
+3. Identify mastered skills.
+4. Prioritize important gaps.
+5. Recommend resources.
+6. Generate a learning path.
+7. Track improvement.
+
+Architecture:
+
+```text
+Target Career
+      ↓
+Required Skills
+      ↓
+Current Student Skills
+      ↓
+Comparison
+      ↓
+Skill Gap
+      ↓
+Prioritized Learning Path
+      ↓
+Progress
+```
+
+---
+
+# 18. Scholarships
+
+EduVerse should provide scholarship discovery.
+
+Potential functionality:
+
+- Search scholarships
+- Eligibility information
+- Deadlines
+- Application details
+- Personalized recommendations
+- Bookmarking
+
+Scholarship data will likely require external/current sources.
+
+---
+
+# 19. Internships & Jobs
+
+Primarily targeted at UG and above users.
+
+Students should be able to discover:
+
+- Internships
+- Jobs
+- Entry-level opportunities
+
+Recommendations may consider:
+
+- Skills
+- Education
+- Career goals
+- Location
+- Experience
+- Interests
+
+The platform should eventually support filtering and personalized opportunity recommendations.
+
+---
+
+# 20. Opportunities Hub
+
+EduVerse should eventually consolidate:
+
+- Scholarships
+- Internships
+- Jobs
+- Hackathons
+- Contests
+- Events
+
+into an Opportunities ecosystem.
+
+Conceptually:
+
+```text
+Opportunities
+│
+├── Scholarships
+├── Internships
+├── Jobs
+├── Hackathons
+├── Contests
+└── Events
+```
+
+Opportunity information should be kept current through appropriate external data sources.
+
+---
+
+# 21. Communities
+
+EduVerse should provide learning and career communities.
+
+Potential functionality:
+
+- Discussion forums
+- Study groups
+- Questions and answers
+- Peer support
+- Topic communities
+- Career communities
+- Reactions
+- Comments
+
+Future functionality may include real-time communication.
+
+---
+
+# 22. Refreshment Zone
+
+The Refreshment Zone provides non-traditional engagement.
+
+Potential features:
+
+- Educational games
+- Field-specific quizzes
+- Brain challenges
+- Leaderboards
+- Achievements
+- Streaks
+- XP
+
+The objective is to make learning more engaging without turning EduVerse into a conventional gaming platform.
+
+Example:
+
+```text
+Student
+   ↓
+Refreshment Zone
+   ↓
+Choose:
+ ├── Game
+ ├── Quiz
+ ├── Challenge
+ └── Brain Activity
+   ↓
+Score
+   ↓
+XP / Achievement
+```
+
+---
+
+# 23. Contests, Events & Hackathons
+
+EduVerse should allow students to discover relevant:
+
+- Coding contests
+- Academic competitions
+- Hackathons
+- Workshops
+- Conferences
+- Career events
+- Other student events
+
+Recommendations should eventually be personalized.
+
+---
+
+# 24. Gamification
+
+Gamification can include:
+
+- XP
+- Levels
+- Streaks
+- Achievements
+- Badges
+- Challenges
+- Leaderboards
+
+Gamification should reward meaningful learning behavior rather than encouraging meaningless activity.
+
+---
+
+# 25. Teacher Portal
+
+Teachers will have a dedicated login and portal.
+
+Potential teacher functionality:
+
+### Dashboard
+
+- Classes
+- Tasks
+- Student performance
+- Announcements
+- Recent activity
+
+### Class Management
+
+- Create/manage classes
+- Add students
+- Manage courses
+
+### Learning Management
+
+- Upload resources
+- Assign study tasks
+- Create quizzes
+- Set deadlines
+
+### Student Insights
+
+- Progress
+- Performance
+- Weak subjects
+- Quiz performance
+- Task completion
+
+### AI Assistance
+
+Potential future capabilities:
+
+- Generate quiz questions
+- Generate explanations
+- Generate lesson plans
+- Analyze class performance
+- Identify common weaknesses
+
+### Important
+
+The exact Teacher Portal feature set is intentionally **not finalized**.
+
+The system architecture should support these possibilities without prematurely locking the UX.
+
+---
+
+# 26. Personalization Engine
+
+Personalization is a cross-platform capability.
+
+Relevant information may include:
+
+- Education level
+- Subjects
+- Interests
+- Career goals
+- Skills
+- Learning progress
+- Quiz results
+- Study behavior
+- Career exploration
+- Opportunity interactions
+
+Conceptually:
+
+```text
+Student Data
+     ↓
+Analysis
+     ↓
+Personalization Engine
+     ↓
+Recommendations
+     ↓
+Student Actions
+     ↓
+New Progress Data
+     ↓
+Improved Recommendations
+```
+
+This feedback loop should become increasingly useful as the student uses the platform.
+
+---
+
+# 27. AI Architecture
+
+EduVerse should use external LLM APIs initially.
+
+Potential providers:
+
+- OpenAI
+- Google Gemini
+
+The platform should use an abstraction layer:
+
+```text
+EduVerse AI Service
+        ↓
+ ┌──────┴──────┐
+ ↓             ↓
+OpenAI       Gemini
+```
+
+This prevents the entire application from becoming dependent on a single provider.
+
+Potential internal AI functions:
+
+- Explanation generation
+- Question generation
+- Quiz generation
+- Study planning
+- Career analysis
+- Skill-gap analysis
+- Conversational tutoring
+
+---
+
+# 28. RAG / Knowledge Retrieval
+
+For EduVerse-owned educational resources, Retrieval-Augmented Generation should eventually be considered.
+
+Flow:
+
+```text
+Educational Documents
+       ↓
+Chunking
+       ↓
+Embeddings
+       ↓
+Vector Search
+       ↓
+Relevant Context
+       ↓
+LLM
+       ↓
+Answer
+```
+
+Potential technology:
+
+**PostgreSQL + pgvector**
+
+This allows the existing database ecosystem to support semantic retrieval without introducing another database immediately.
+
+---
+
+# 29. Technical Architecture
+
+The preferred long-term architecture is currently:
+
+## Frontend
+
+- React
+- Vite
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+- TanStack Query
+- TanStack Router
+- Zustand
+
+## Backend
+
+- NestJS
+- TypeScript
+- REST APIs
+- WebSockets where required
+
+## Database
+
+- PostgreSQL
+- Prisma
+- pgvector
+
+## Authentication
+
+- Supabase Auth
+
+## Storage
+
+- Supabase Storage
+
+## AI
+
+- OpenAI API
+- Gemini API
+- AI abstraction layer
+
+## Future Infrastructure
+
+- Redis
+- Background jobs
+- RAG
+- Analytics
+- External opportunity ingestion
+
+This architecture is a direction rather than an irreversible technical decision.
+
+---
+
+# 30. Existing Phase 1 Foundation
+
+EduVerse Phase 1 already provides the foundation.
+
+Existing areas include:
+
+- Authentication
+- User onboarding
+- Student profile
+- Dashboard shell
+- PostgreSQL database
+- Prisma
+- Supabase
+- UI components
+- Seed data
+- Career roadmap structures
+- Study-related models
+- AI conversation structures
+- Gamification structures
+
+Phase 1 should therefore be treated as the foundation/prototype rather than a project starting from zero.
+
+---
+
+# 31. Security & Privacy Requirements
+
+The platform will handle student-related information and therefore requires strong security practices.
+
+Requirements include:
+
+- Role-based authorization
+- Secure authentication
+- Server-side authorization checks
+- Input validation
+- API protection
+- Rate limiting
+- Secure secret management
+- Audit logging
+- Appropriate database access controls
+- Protection of AI API keys
+- Appropriate privacy controls
+
+LLM API keys must never be exposed to the client.
+
+---
+
+# 32. Non-Functional Requirements
+
+## Performance
+
+- Fast initial application load
+- Responsive dashboard
+- Efficient API calls
+- Appropriate caching
+- Streaming AI responses where beneficial
+
+## Scalability
+
+Architecture should support growth in:
+
+- Students
+- Teachers
+- Courses
+- Resources
+- AI conversations
+- Communities
+- Opportunities
+
+## Reliability
+
+- Graceful AI failure handling
+- Database error handling
+- Retry mechanisms where appropriate
+- Monitoring and logging
+
+## Accessibility
+
+The UI should aim to support:
+
+- Keyboard navigation
+- Appropriate contrast
+- Screen-reader compatibility
+- Accessible form controls
+
+## Maintainability
+
+The backend should be modular.
+
+Suggested domains:
+
+```text
+auth
+users
+learning
+study-planner
+ai
+careers
+skill-gap
+scholarships
+internships
+jobs
+communities
+quizzes
+gamification
+opportunities
+notifications
+teachers
+```
+
+---
+
+# 33. Analytics
+
+Eventually track meaningful product events such as:
+
+- Signups
+- Onboarding completion
+- Resource usage
+- Study-plan creation
+- Study-plan completion
+- AI usage
+- Quiz attempts
+- Career exploration
+- Skill-gap analysis
+- Opportunity interactions
+- Community participation
+
+Potential analytics platform:
+
+**PostHog**
+
+Analytics should be used to improve the product rather than unnecessarily profiling students.
+
+---
+
+# 34. Suggested Product Development Phases
+
+## Phase 1 — Foundation
+
+Already established:
+
+- Authentication
+- Onboarding
+- Student profile
+- Dashboard
+- Database
+- Initial architecture
+
+---
+
+## Phase 2 — Learning Hub
+
+Build:
+
+- Subjects
+- Courses
+- Resources
+- Notes
+- Videos
+- PYQs
+- Practice questions
+- Bookmarks
+
+---
+
+## Phase 3 — Study Planner
+
+Build:
+
+- Daily planning
+- Weekly planning
+- Monthly planning
+- Task tracking
+- Progress tracking
+- AI-assisted planning
+
+Detailed requirements to be finalized separately.
+
+---
+
+## Phase 4 — Career Discovery
+
+Build:
+
+- Career exploration
+- Career information
+- Career recommendations
+- Career pathways
+
+---
+
+## Phase 5 — Career Roadmapper
+
+Build:
+
+- Target careers
+- Career stages
+- Required subjects
+- Required skills
+- Projects
+- Certifications
+- Higher education
+- Opportunities
+
+---
+
+## Phase 6 — Skill Gap Analyzer
+
+Build:
+
+- Student skill profiles
+- Career skill requirements
+- Skill comparison
+- Gap visualization
+- Personalized learning paths
+- Progress tracking
+
+---
+
+## Phase 7 — eduGPT
+
+Build:
+
+- Conversational AI
+- Context-aware explanations
+- Practice generation
+- Quizzing
+- Personalized tutoring
+- RAG integration
+
+---
+
+## Phase 8 — Opportunities
+
+Build:
+
+- Scholarships
+- Internships
+- Jobs
+- Contests
+- Events
+- Hackathons
+
+---
+
+## Phase 9 — Communities
+
+Build:
+
+- Communities
+- Posts
+- Comments
+- Study groups
+- Q&A
+- Moderation
+
+---
+
+## Phase 10 — Refreshment Zone
+
+Build:
+
+- Games
+- Field-specific quizzes
+- Challenges
+- XP
+- Achievements
+- Leaderboards
+
+---
+
+## Phase 11 — Teacher Portal
+
+Build and finalize:
+
+- Teacher authentication
+- Teacher dashboard
+- Class management
+- Course/resource management
+- Assignments
+- Quizzes
+- Student insights
+- Teacher AI tools
+
+Exact scope should be finalized before implementation.
+
+---
+
+## Phase 12 — Advanced Personalization
+
+Build:
+
+- Advanced recommendation engine
+- Behavioral personalization
+- Improved career recommendations
+- Advanced learning recommendations
+- Predictive insights where appropriate
+
+---
+
+# 35. MVP Definition
+
+A practical MVP should NOT contain every feature.
+
+The initial usable product should demonstrate the core EduVerse loop:
+
+```text
+Student Profile
+      ↓
+Personalized Learning
+      ↓
+AI Study Assistance
+      ↓
+Study Planning
+      ↓
+Career Discovery
+      ↓
+Career Roadmap
+      ↓
+Skill Gap
+      ↓
+Personalized Learning Path
+```
+
+This loop demonstrates the fundamental value proposition of EduVerse.
+
+Opportunities, communities, games, advanced teacher functionality, and advanced personalization can follow.
+
+---
+
+# 36. Success Metrics
+
+Potential product-level metrics:
+
+### Learning
+
+- Study sessions completed
+- Resources consumed
+- Practice questions completed
+- Quiz improvement
+
+### Planning
+
+- Plans created
+- Tasks completed
+- Plan adherence
+
+### AI
+
+- AI conversations
+- Questions resolved
+- Practice questions generated
+- Student satisfaction
+
+### Career
+
+- Careers explored
+- Career roadmaps created
+- Skill-gap analyses completed
+- Roadmap milestones completed
+
+### Opportunities
+
+- Opportunities viewed
+- Opportunities bookmarked
+- Applications/click-throughs
+
+### Engagement
+
+- Returning users
+- Streaks
+- Community activity
+- Quiz/game participation
+
+### Teacher
+
+- Active teachers
+- Classes created
+- Assignments created
+- Student insights viewed
+
+---
+
+# 37. Key Risks
+
+## AI hallucination
+
+AI may provide incorrect educational or career information.
+
+**Mitigation:**
+- RAG
+- Structured knowledge
+- Clear uncertainty handling
+- Appropriate source references
+- Human oversight where needed
+
+## Over-personalization
+
+Recommendations may become overly narrow.
+
+**Mitigation:**
+- Show alternatives
+- Encourage exploration
+- Allow students to change goals
+
+## Opportunity data becoming outdated
+
+Scholarships, internships, jobs, and events change frequently.
+
+**Mitigation:**
+- Reliable external data sources
+- Data freshness checks
+- Expiration dates
+- Periodic ingestion
+
+## Feature overload
+
+EduVerse has a very large scope.
+
+**Mitigation:**
+- Modular development
+- Clear MVP
+- Phased releases
+- Avoid building every feature simultaneously
+
+## AI dependency
+
+Dependence on one LLM provider could become expensive or risky.
+
+**Mitigation:**
+- AI abstraction layer
+- Multiple providers
+- Model routing
+
+---
+
+# 38. Open Product Questions
+
+These are intentionally unresolved and should be discussed later:
+
+### Study Planner
+
+- How exactly should daily/weekly/monthly plans interact?
+- How much control should the student have?
+- How should missed tasks be rescheduled?
+- Should AI automatically modify plans?
+- How should exams affect scheduling?
+
+### eduGPT
+
+- Should it have separate Study/Career/Coding modes?
+- Should conversations have persistent memory?
+- How much student context should it access?
+- How should citations/sources work?
+
+### Career System
+
+- Where does career data come from?
+- How frequently should career requirements be updated?
+- How should career recommendations be evaluated?
+
+### Opportunities
+
+- Which external sources should be used?
+- API vs scraping vs manually curated data?
+- How should duplicate opportunities be detected?
+
+### Teacher Portal
+
+- Exact teacher workflows
+- Teacher/student relationships
+- Class creation
+- Assignment system
+- Teacher analytics
+- Teacher AI features
+- Teacher permissions
+
+### Communities
+
+- Moderation model
+- Anonymous vs public identity
+- Teacher participation
+- Messaging
+
+### Gamification
+
+- XP calculation
+- Leaderboards
+- Anti-abuse mechanisms
+- Rewards
+
+---
+
+# 39. Product North Star
+
+EduVerse should ultimately evolve into a continuous loop:
+
+```text
+             ┌─────────────────────┐
+             │    STUDENT GOALS    │
+             └──────────┬──────────┘
+                        ↓
+              ┌──────────────────┐
+              │ PERSONAL PROFILE │
+              └────────┬─────────┘
+                       ↓
+              ┌──────────────────┐
+              │ AI UNDERSTANDING │
+              └────────┬─────────┘
+                       ↓
+       ┌───────────────┼────────────────┐
+       ↓               ↓                ↓
+    LEARNING        CAREER          OPPORTUNITIES
+       ↓               ↓                ↓
+   Study Plan      Roadmap          Scholarships
+   Resources       Skill Gap        Internships
+   Practice        Guidance         Jobs
+       ↓               ↓                ↓
+       └───────────────┼────────────────┘
+                       ↓
+                STUDENT PROGRESS
+                       ↓
+                 NEW INSIGHTS
+                       ↓
+                BETTER PERSONALIZATION
+                       │
+                       └──────────────→ LOOP
+```
+
+The ultimate goal is **not to build a collection of unrelated features**.
+
+Every major feature should contribute to the same student journey:
+
+> **Understand → Learn → Practice → Improve → Discover → Prepare → Opportunity → Grow.**
+
+---
+
+# 40. Final Product Definition
+
+EduVerse AI is a personalized student ecosystem combining:
+
+**Education + AI + Academic Planning + Career Guidance + Skills + Opportunities + Community + Engagement**
+
+with separate experiences for:
+
+**Students** and **Teachers**.
+
+The defining differentiator should be the connection between these systems.
+
+A student should not have to figure out independently:
+
+> "What should I study?"
+
+> "What career should I choose?"
+
+> "What skills am I missing?"
+
+> "How do I develop those skills?"
+
+> "Where can I use them?"
+
+EduVerse should progressively answer those questions through a single connected experience.

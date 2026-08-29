@@ -1,0 +1,1 @@
+- [EduVerse API codegen](eduverse-build-notes.md) — keep generated Zod validators compatible with the installed runtime; integer schemas currently need OpenAPI number types.
