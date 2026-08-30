@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { ReplitConnectors } from "@replit/connectors-sdk";
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseUrl = process.env.VITE_SUPABASE_URL?.replace(/\/+$/, "").replace(/\/rest\/v1$/, "");
 const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
@@ -21,5 +21,6 @@ export function supabaseDatabaseRequest(
   options?: SupabaseProxyOptions,
 ): Promise<Response> {
   const connectors = new ReplitConnectors();
-  return connectors.proxy("supabase", path, options);
+  const normalizedPath = path.replace(/^\/rest\/v1(?=\/|$)/, "") || "/";
+  return connectors.proxy("supabase", normalizedPath, options);
 }

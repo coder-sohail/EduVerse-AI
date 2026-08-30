@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import type { EduVerseRole } from '@/lib/auth';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.replace(/\/+$/, '').replace(/\/rest\/v1$/, '');
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
