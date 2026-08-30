@@ -430,3 +430,178 @@ export const SendAiChatMessageResponse = zod.object({
 })
 
 
+/**
+ * @summary List relevant student opportunities
+ */
+export const ListOpportunitiesQueryParams = zod.object({
+  "type": zod.enum(['all', 'scholarship', 'internship', 'hackathon', 'event', 'job']).optional(),
+  "search": zod.coerce.string().optional()
+})
+
+export const ListOpportunitiesResponseItem = zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "kind": zod.enum(['scholarship', 'internship', 'hackathon', 'event', 'job']),
+  "organization": zod.string(),
+  "deadline": zod.string(),
+  "location": zod.string(),
+  "description": zod.string(),
+  "eligibility": zod.string(),
+  "featured": zod.boolean(),
+  "saved": zod.boolean(),
+  "accent": zod.string()
+})
+export const ListOpportunitiesResponse = zod.array(ListOpportunitiesResponseItem)
+
+
+/**
+ * @summary Save or unsave an opportunity
+ */
+export const ToggleOpportunitySaveParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const ToggleOpportunitySaveBody = zod.object({
+  "saved": zod.boolean()
+})
+
+export const ToggleOpportunitySaveResponse = zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "kind": zod.enum(['scholarship', 'internship', 'hackathon', 'event', 'job']),
+  "organization": zod.string(),
+  "deadline": zod.string(),
+  "location": zod.string(),
+  "description": zod.string(),
+  "eligibility": zod.string(),
+  "featured": zod.boolean(),
+  "saved": zod.boolean(),
+  "accent": zod.string()
+})
+
+
+/**
+ * @summary List community posts
+ */
+export const ListCommunityPostsResponseItem = zod.object({
+  "id": zod.string(),
+  "author": zod.string(),
+  "initials": zod.string(),
+  "group": zod.string(),
+  "title": zod.string(),
+  "body": zod.string(),
+  "likes": zod.number(),
+  "replies": zod.number(),
+  "liked": zod.boolean(),
+  "time": zod.string()
+})
+export const ListCommunityPostsResponse = zod.array(ListCommunityPostsResponseItem)
+
+
+/**
+ * @summary Create a community post
+ */
+
+
+
+
+
+export const CreateCommunityPostBody = zod.object({
+  "title": zod.string().min(1),
+  "body": zod.string().min(1),
+  "group": zod.string().min(1)
+})
+
+export const CreateCommunityPostResponse = zod.object({
+  "id": zod.string(),
+  "author": zod.string(),
+  "initials": zod.string(),
+  "group": zod.string(),
+  "title": zod.string(),
+  "body": zod.string(),
+  "likes": zod.number(),
+  "replies": zod.number(),
+  "liked": zod.boolean(),
+  "time": zod.string()
+})
+
+
+/**
+ * @summary Like or unlike a community post
+ */
+export const ToggleCommunityPostLikeParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const ToggleCommunityPostLikeBody = zod.object({
+  "liked": zod.boolean()
+})
+
+export const ToggleCommunityPostLikeResponse = zod.object({
+  "id": zod.string(),
+  "author": zod.string(),
+  "initials": zod.string(),
+  "group": zod.string(),
+  "title": zod.string(),
+  "body": zod.string(),
+  "likes": zod.number(),
+  "replies": zod.number(),
+  "liked": zod.boolean(),
+  "time": zod.string()
+})
+
+
+/**
+ * @summary List short learning quizzes
+ */
+export const listRefreshmentQuizzesResponseProgressMin = 0;
+export const listRefreshmentQuizzesResponseProgressMax = 100;
+
+
+
+export const ListRefreshmentQuizzesResponseItem = zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "category": zod.string(),
+  "questions": zod.number(),
+  "xp": zod.number(),
+  "progress": zod.number().min(listRefreshmentQuizzesResponseProgressMin).max(listRefreshmentQuizzesResponseProgressMax),
+  "accent": zod.string()
+})
+export const ListRefreshmentQuizzesResponse = zod.array(ListRefreshmentQuizzesResponseItem)
+
+
+/**
+ * @summary Get teacher portal dashboard
+ */
+export const getTeacherDashboardResponseClassGroupsItemProgressMin = 0;
+export const getTeacherDashboardResponseClassGroupsItemProgressMax = 100;
+
+
+
+export const GetTeacherDashboardResponse = zod.object({
+  "teacherName": zod.string(),
+  "classes": zod.number(),
+  "activeStudents": zod.number(),
+  "assignmentsToReview": zod.number(),
+  "averageProgress": zod.number(),
+  "classGroups": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "subject": zod.string(),
+  "students": zod.number(),
+  "progress": zod.number().min(getTeacherDashboardResponseClassGroupsItemProgressMin).max(getTeacherDashboardResponseClassGroupsItemProgressMax),
+  "next": zod.string()
+})),
+  "recentSubmissions": zod.array(zod.object({
+  "id": zod.string(),
+  "student": zod.string(),
+  "assignment": zod.string(),
+  "className": zod.string(),
+  "score": zod.number(),
+  "status": zod.enum(['submitted', 'needs_review', 'reviewed']),
+  "time": zod.string()
+}))
+})
+
+

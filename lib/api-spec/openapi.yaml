@@ -18,6 +18,14 @@ tags:
     description: Career discovery and roadmaps
   - name: ai
     description: Context-aware study assistance
+  - name: opportunities
+    description: Scholarships, internships, events, and jobs
+  - name: community
+    description: Student communities and peer learning
+  - name: refreshment
+    description: Short quizzes and learning challenges
+  - name: teachers
+    description: Teacher portal insights
 paths:
   /healthz:
     get:
@@ -289,6 +297,137 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ChatMessage"
+  /opportunities:
+    get:
+      operationId: listOpportunities
+      tags: [opportunities]
+      summary: List relevant student opportunities
+      parameters:
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [all, scholarship, internship, hackathon, event, job]
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Opportunities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Opportunity"
+  /opportunities/{id}/save:
+    patch:
+      operationId: toggleOpportunitySave
+      tags: [opportunities]
+      summary: Save or unsave an opportunity
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SavedUpdate"
+      responses:
+        "200":
+          description: Updated opportunity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Opportunity"
+  /community/posts:
+    get:
+      operationId: listCommunityPosts
+      tags: [community]
+      summary: List community posts
+      responses:
+        "200":
+          description: Community posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CommunityPost"
+    post:
+      operationId: createCommunityPost
+      tags: [community]
+      summary: Create a community post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommunityPostInput"
+      responses:
+        "201":
+          description: Created community post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommunityPost"
+  /community/posts/{id}/like:
+    patch:
+      operationId: toggleCommunityPostLike
+      tags: [community]
+      summary: Like or unlike a community post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LikeUpdate"
+      responses:
+        "200":
+          description: Updated community post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommunityPost"
+  /refreshment/quizzes:
+    get:
+      operationId: listRefreshmentQuizzes
+      tags: [refreshment]
+      summary: List short learning quizzes
+      responses:
+        "200":
+          description: Learning quizzes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Quiz"
+  /teacher/dashboard:
+    get:
+      operationId: getTeacherDashboard
+      tags: [teachers]
+      summary: Get teacher portal dashboard
+      responses:
+        "200":
+          description: Teacher dashboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeacherDashboard"
 components:
   schemas:
     HealthStatus:
@@ -527,4 +666,103 @@ components:
         suggestions:
           type: array
           items: { type: string }
+    Opportunity:
+      type: object
+      required: [id, title, kind, organization, deadline, location, description, eligibility, featured, saved, accent]
+      properties:
+        id: { type: string }
+        title: { type: string }
+        kind:
+          type: string
+          enum: [scholarship, internship, hackathon, event, job]
+        organization: { type: string }
+        deadline: { type: string }
+        location: { type: string }
+        description: { type: string }
+        eligibility: { type: string }
+        featured: { type: boolean }
+        saved: { type: boolean }
+        accent: { type: string }
+    SavedUpdate:
+      type: object
+      required: [saved]
+      properties:
+        saved: { type: boolean }
+    CommunityPost:
+      type: object
+      required: [id, author, initials, group, title, body, likes, replies, liked, time]
+      properties:
+        id: { type: string }
+        author: { type: string }
+        initials: { type: string }
+        group: { type: string }
+        title: { type: string }
+        body: { type: string }
+        likes: { type: number }
+        replies: { type: number }
+        liked: { type: boolean }
+        time: { type: string }
+    CommunityPostInput:
+      type: object
+      required: [title, body, group]
+      properties:
+        title: { type: string, minLength: 1 }
+        body: { type: string, minLength: 1 }
+        group: { type: string, minLength: 1 }
+    LikeUpdate:
+      type: object
+      required: [liked]
+      properties:
+        liked: { type: boolean }
+    Quiz:
+      type: object
+      required: [id, title, category, questions, xp, progress, accent]
+      properties:
+        id: { type: string }
+        title: { type: string }
+        category: { type: string }
+        questions: { type: number }
+        xp: { type: number }
+        progress: { type: number, minimum: 0, maximum: 100 }
+        accent: { type: string }
+    TeacherDashboard:
+      type: object
+      required: [teacherName, classes, activeStudents, assignmentsToReview, averageProgress, classGroups, recentSubmissions]
+      properties:
+        teacherName: { type: string }
+        classes: { type: number }
+        activeStudents: { type: number }
+        assignmentsToReview: { type: number }
+        averageProgress: { type: number }
+        classGroups:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeacherClass"
+        recentSubmissions:
+          type: array
+          items:
+            $ref: "#/components/schemas/StudentSubmission"
+    TeacherClass:
+      type: object
+      required: [id, name, subject, students, progress, next]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        subject: { type: string }
+        students: { type: number }
+        progress: { type: number, minimum: 0, maximum: 100 }
+        next: { type: string }
+    StudentSubmission:
+      type: object
+      required: [id, student, assignment, className, score, status, time]
+      properties:
+        id: { type: string }
+        student: { type: string }
+        assignment: { type: string }
+        className: { type: string }
+        score: { type: number }
+        status:
+          type: string
+          enum: [submitted, needs_review, reviewed]
+        time: { type: string }
 

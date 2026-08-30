@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import { CareersPage, DashboardPage, LearnPage, PlannerPage, ProfilePage, RoadmapPage, Shell, SkillsPage, AskPage } from '@/components/eduverse-app';
+import { CommunityPage, OpportunitiesPage, RefreshmentPage, TeacherPage } from '@/pages/extended-pages';
 import {
   Route,
   Switch,
@@ -26,6 +27,10 @@ function Router() {
         <Route path="/skills" component={SkillsPage} />
         <Route path="/ask" component={AskPage} />
         <Route path="/profile" component={ProfilePage} />
+        <Route path="/opportunities" component={OpportunitiesPage} />
+        <Route path="/community" component={CommunityPage} />
+        <Route path="/refreshment" component={RefreshmentPage} />
+        <Route path="/teacher" component={TeacherPage} />
         <Route component={NotFound} />
       </Switch></Shell>
     </RoutedErrorBoundary>

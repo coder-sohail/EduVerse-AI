@@ -1,9 +1,13 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import {
   CreateStudyTaskBody,
+  CreateCommunityPostBody,
+  ListOpportunitiesQueryParams,
   ListCareersQueryParams,
   ListLearningResourcesQueryParams,
   ListStudyTasksQueryParams,
+  ToggleCommunityPostLikeBody,
+  ToggleOpportunitySaveBody,
   SendAiChatMessageBody,
   ToggleResourceBookmarkBody,
   ToggleResourceBookmarkParams,
@@ -293,6 +297,139 @@ const chatReplies = [
   },
 ];
 
+const opportunities = [
+  {
+    id: "opportunity-ml-internship",
+    title: "Machine Learning Intern",
+    kind: "internship" as const,
+    organization: "Northstar Labs",
+    deadline: "in 12 days",
+    location: "Remote · India",
+    description: "Work with a small applied ML team on evaluation, data quality, and model experiences.",
+    eligibility: "Undergraduate students with Python fundamentals",
+    featured: true,
+    saved: false,
+    accent: "coral",
+  },
+  {
+    id: "opportunity-women-tech",
+    title: "Women in Tech Scholars",
+    kind: "scholarship" as const,
+    organization: "Future Forward Foundation",
+    deadline: "Sep 14",
+    location: "India",
+    description: "A scholarship and mentorship programme for students building a future in technology.",
+    eligibility: "Students in years 1–3 with demonstrated financial need",
+    featured: true,
+    saved: true,
+    accent: "gold",
+  },
+  {
+    id: "opportunity-build-ai",
+    title: "Build with AI Weekend",
+    kind: "hackathon" as const,
+    organization: "Open Source Club",
+    deadline: "Sep 02",
+    location: "Online · 48 hours",
+    description: "Make something useful with AI, learn from mentors, and leave with a project to share.",
+    eligibility: "Open to all students and first-time builders",
+    featured: false,
+    saved: false,
+    accent: "violet",
+  },
+  {
+    id: "opportunity-responsible-ai",
+    title: "Responsible AI: from idea to impact",
+    kind: "event" as const,
+    organization: "The Learning Room",
+    deadline: "Aug 31 · 6:30 PM",
+    location: "Online · Live session",
+    description: "A practical conversation on designing AI products people can trust.",
+    eligibility: "Anyone curious about the future of technology",
+    featured: false,
+    saved: false,
+    accent: "mint",
+  },
+  {
+    id: "opportunity-junior-data",
+    title: "Junior Data Analyst",
+    kind: "job" as const,
+    organization: "Good Company",
+    deadline: "Rolling applications",
+    location: "Bengaluru · Hybrid",
+    description: "Join a product team where your first job is to ask better questions of the data.",
+    eligibility: "Final-year students or recent graduates",
+    featured: false,
+    saved: false,
+    accent: "blue",
+  },
+];
+
+const communityPosts = [
+  {
+    id: "post-first-ml-project",
+    author: "Arjun Mehta",
+    initials: "AM",
+    group: "AI builders",
+    title: "What did you build for your first ML project?",
+    body: "I’m choosing between a movie recommender and a small image classifier. Would love to hear what helped you learn the most, not just what looked impressive.",
+    likes: 24,
+    replies: 8,
+    liked: false,
+    time: "18 min ago",
+  },
+  {
+    id: "post-linear-algebra",
+    author: "Leena Shah",
+    initials: "LS",
+    group: "Study circle",
+    title: "The eigenvector explanation that finally clicked",
+    body: "Instead of memorising the formula, I pictured a rubber sheet being stretched. The directions that stay put are the ones we care about. Sharing in case someone else is stuck here too.",
+    likes: 41,
+    replies: 12,
+    liked: true,
+    time: "2 hours ago",
+  },
+  {
+    id: "post-accountability",
+    author: "Devika Rao",
+    initials: "DR",
+    group: "Quiet accountability",
+    title: "A small win is still a win",
+    body: "Finished my 30-minute session even though I didn’t feel like starting. Posting this so tomorrow-me remembers that momentum is built, not found.",
+    likes: 63,
+    replies: 5,
+    liked: false,
+    time: "Yesterday",
+  },
+];
+
+const quizzes = [
+  { id: "quiz-python", title: "Python patterns", category: "Build your fluency", questions: 10, xp: 80, progress: 40, accent: "coral" },
+  { id: "quiz-data-thinking", title: "Think like a data scientist", category: "Reasoning practice", questions: 8, xp: 60, progress: 0, accent: "violet" },
+  { id: "quiz-ai-basics", title: "AI foundations", category: "Quick refresh", questions: 12, xp: 100, progress: 75, accent: "mint" },
+  { id: "quiz-sql", title: "SQL speed round", category: "Practice under pressure", questions: 15, xp: 120, progress: 100, accent: "gold" },
+];
+
+const teacherDashboard = {
+  teacherName: "Dr. Priya Menon",
+  classes: 4,
+  activeStudents: 86,
+  assignmentsToReview: 12,
+  averageProgress: 71,
+  classGroups: [
+    { id: "class-cs2", name: "CS · Year 2", subject: "Data Structures", students: 28, progress: 76, next: "Trees & graphs · due Friday" },
+    { id: "class-ai-lab", name: "AI Lab", subject: "Machine Learning", students: 22, progress: 68, next: "Model evaluation · due Monday" },
+    { id: "class-web", name: "Product builders", subject: "Web Development", students: 19, progress: 82, next: "Ship v1 · due tomorrow" },
+    { id: "class-foundations", name: "Foundations", subject: "Python", students: 17, progress: 59, next: "Functions · due next week" },
+  ],
+  recentSubmissions: [
+    { id: "submission-1", student: "Maya Chen", assignment: "Image classifier sketch", className: "AI Lab", score: 88, status: "needs_review" as const, time: "12 min ago" },
+    { id: "submission-2", student: "Kabir Singh", assignment: "Graph traversal exercise", className: "CS · Year 2", score: 94, status: "submitted" as const, time: "1 hour ago" },
+    { id: "submission-3", student: "Sara Bose", assignment: "Build a responsive card", className: "Product builders", score: 76, status: "reviewed" as const, time: "Yesterday" },
+  ],
+};
+
 const router: IRouter = Router();
 
 function sendValidationError(res: Response, error: unknown) {
@@ -445,5 +582,65 @@ router.post("/ai/chat", (req: Request, res: Response) => {
     suggestions: reply.suggestions,
   });
 });
+
+router.get("/opportunities", (req: Request, res: Response) => {
+  const parsed = ListOpportunitiesQueryParams.safeParse(req.query);
+  if (!parsed.success) return sendValidationError(res, parsed.error);
+  const search = parsed.data.search?.toLowerCase();
+  const type = parsed.data.type;
+  return res.json(
+    opportunities.filter((item) => {
+      const typeMatches = !type || type === "all" || item.kind === type;
+      const searchMatches =
+        !search ||
+        `${item.title} ${item.organization} ${item.description}`.toLowerCase().includes(search);
+      return typeMatches && searchMatches;
+    }),
+  );
+});
+
+router.patch("/opportunities/:id/save", (req: Request, res: Response) => {
+  const body = ToggleOpportunitySaveBody.safeParse(req.body);
+  if (!body.success) return sendValidationError(res, body.error);
+  const opportunity = opportunities.find((item) => item.id === req.params.id);
+  if (!opportunity) return res.status(404).json({ error: "Opportunity not found" });
+  opportunity.saved = body.data.saved;
+  return res.json(opportunity);
+});
+
+router.get("/community/posts", (_req, res) => res.json(communityPosts));
+
+router.post("/community/posts", (req: Request, res: Response) => {
+  const parsed = CreateCommunityPostBody.safeParse(req.body);
+  if (!parsed.success) return sendValidationError(res, parsed.error);
+  const post = {
+    id: `post-${Date.now()}`,
+    author: profile.name,
+    initials: profile.avatarInitials,
+    group: parsed.data.group,
+    title: parsed.data.title,
+    body: parsed.data.body,
+    likes: 0,
+    replies: 0,
+    liked: false,
+    time: "Just now",
+  };
+  communityPosts.unshift(post);
+  return res.status(201).json(post);
+});
+
+router.patch("/community/posts/:id/like", (req: Request, res: Response) => {
+  const body = ToggleCommunityPostLikeBody.safeParse(req.body);
+  if (!body.success) return sendValidationError(res, body.error);
+  const post = communityPosts.find((item) => item.id === req.params.id);
+  if (!post) return res.status(404).json({ error: "Post not found" });
+  post.liked = body.data.liked;
+  post.likes = Math.max(0, post.likes + (body.data.liked ? 1 : -1));
+  return res.json(post);
+});
+
+router.get("/refreshment/quizzes", (_req, res) => res.json(quizzes));
+
+router.get("/teacher/dashboard", (_req, res) => res.json(teacherDashboard));
 
 export default router;

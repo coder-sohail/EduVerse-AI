@@ -336,6 +336,117 @@ export interface ChatMessage {
   suggestions: string[];
 }
 
+export type OpportunityKind = typeof OpportunityKind[keyof typeof OpportunityKind];
+
+
+export const OpportunityKind = {
+  scholarship: 'scholarship',
+  internship: 'internship',
+  hackathon: 'hackathon',
+  event: 'event',
+  job: 'job',
+} as const;
+
+export interface Opportunity {
+  id: string;
+  title: string;
+  kind: OpportunityKind;
+  organization: string;
+  deadline: string;
+  location: string;
+  description: string;
+  eligibility: string;
+  featured: boolean;
+  saved: boolean;
+  accent: string;
+}
+
+export interface SavedUpdate {
+  saved: boolean;
+}
+
+export interface CommunityPost {
+  id: string;
+  author: string;
+  initials: string;
+  group: string;
+  title: string;
+  body: string;
+  likes: number;
+  replies: number;
+  liked: boolean;
+  time: string;
+}
+
+export interface CommunityPostInput {
+  /** @minLength 1 */
+  title: string;
+  /** @minLength 1 */
+  body: string;
+  /** @minLength 1 */
+  group: string;
+}
+
+export interface LikeUpdate {
+  liked: boolean;
+}
+
+export interface Quiz {
+  id: string;
+  title: string;
+  category: string;
+  questions: number;
+  xp: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  progress: number;
+  accent: string;
+}
+
+export interface TeacherClass {
+  id: string;
+  name: string;
+  subject: string;
+  students: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  progress: number;
+  next: string;
+}
+
+export type StudentSubmissionStatus = typeof StudentSubmissionStatus[keyof typeof StudentSubmissionStatus];
+
+
+export const StudentSubmissionStatus = {
+  submitted: 'submitted',
+  needs_review: 'needs_review',
+  reviewed: 'reviewed',
+} as const;
+
+export interface StudentSubmission {
+  id: string;
+  student: string;
+  assignment: string;
+  className: string;
+  score: number;
+  status: StudentSubmissionStatus;
+  time: string;
+}
+
+export interface TeacherDashboard {
+  teacherName: string;
+  classes: number;
+  activeStudents: number;
+  assignmentsToReview: number;
+  averageProgress: number;
+  classGroups: TeacherClass[];
+  recentSubmissions: StudentSubmission[];
+}
+
 export type ListLearningResourcesParams = {
 subject?: string;
 type?: ListLearningResourcesType;
@@ -367,4 +478,21 @@ export const ListStudyTasksRange = {
 export type ListCareersParams = {
 search?: string;
 };
+
+export type ListOpportunitiesParams = {
+type?: ListOpportunitiesType;
+search?: string;
+};
+
+export type ListOpportunitiesType = typeof ListOpportunitiesType[keyof typeof ListOpportunitiesType];
+
+
+export const ListOpportunitiesType = {
+  all: 'all',
+  scholarship: 'scholarship',
+  internship: 'internship',
+  hackathon: 'hackathon',
+  event: 'event',
+  job: 'job',
+} as const;
 
