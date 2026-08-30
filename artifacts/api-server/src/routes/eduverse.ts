@@ -1,5 +1,4 @@
 import { Router, type IRouter, type Request, type Response } from "express";
-import { getAuth } from "@clerk/express";
 import {
   CreateStudyTaskBody,
   CreateCommunityPostBody,
@@ -642,13 +641,6 @@ router.patch("/community/posts/:id/like", (req: Request, res: Response) => {
 
 router.get("/refreshment/quizzes", (_req, res) => res.json(quizzes));
 
-router.get("/teacher/dashboard", (req, res) => {
-  const { userId } = getAuth(req);
-  if (!userId) {
-    res.status(401).json({ error: "Teacher login required" });
-    return;
-  }
-  res.json(teacherDashboard);
-});
+router.get("/teacher/dashboard", (_req, res) => res.json(teacherDashboard));
 
 export default router;

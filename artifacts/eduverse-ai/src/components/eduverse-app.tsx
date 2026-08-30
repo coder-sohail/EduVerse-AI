@@ -1,5 +1,4 @@
 import { type FormEvent, type ReactNode, useMemo, useState } from 'react';
-import { useClerk } from '@clerk/react';
 import { Link, useLocation, useRoute } from 'wouter';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -18,6 +17,7 @@ import {
 } from '@workspace/api-client-react';
 import type { Career, ChatMessage, LearningResource, StudyTask } from '@workspace/api-client-react';
 import { clearEduVerseRole, getEduVerseRole } from '@/lib/auth';
+import { supabase } from '@/lib/supabase';
 
 const navItems = [
   { href: '/', label: 'Today', icon: LayoutDashboard },
@@ -55,7 +55,6 @@ function QueryState({ loading, error, empty, children }: { loading?: boolean; er
 export function Shell({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { signOut } = useClerk();
   const role = getEduVerseRole();
   const profile = useGetStudentProfile();
   const initials = profile.data?.avatarInitials || profile.data?.name?.split(' ').map((n) => n[0]).join('').slice(0, 2) || 'AR';
@@ -65,7 +64,7 @@ export function Shell({ children }: { children: ReactNode }) {
     <aside className={cx('fixed inset-y-0 left-0 z-40 flex w-[248px] flex-col bg-sidebar px-5 py-6 text-sidebar-foreground transition-transform duration-300 md:translate-x-0', mobileOpen ? 'translate-x-0' : '-translate-x-full')}>
       <div className="mb-11 flex items-center gap-3 px-2"><div className="grid h-9 w-9 place-items-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground"><GraduationCap className="h-5 w-5" /></div><div><p className="font-serif text-xl font-bold tracking-tight">EduVerse</p><p className="text-[9px] font-bold uppercase tracking-[.2em] text-sidebar-foreground/55">AI companion</p></div></div>
       <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">{visibleNav.map(({ href, label, icon: Icon }) => <Link key={href} href={href} data-testid={`link-nav-${label.toLowerCase().replaceAll(' ', '-')}`} onClick={() => setMobileOpen(false)} className={cx('group flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold', location === href ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-[0_8px_20px_hsl(var(--sidebar-primary)/.18)]' : 'text-sidebar-foreground/65 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground')}><Icon className="h-[18px] w-[18px]" /><span>{label}</span>{location === href && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-sidebar-primary-foreground" />}</Link>)}</nav>
-      <div className="mt-auto space-y-3">{role === 'student' && <Link href="/ask" data-testid="link-ask" className="group flex items-center gap-3 rounded-xl border border-sidebar-border bg-sidebar-accent/70 px-3 py-3 text-sm font-semibold hover:bg-sidebar-accent"><MessageCircle className="h-[18px] w-[18px] text-sidebar-primary" /><span>Ask eduGPT</span><ArrowRight className="ml-auto h-4 w-4 opacity-50 transition-transform group-hover:translate-x-1" /></Link>}<Link href="/profile" data-testid="link-profile" className="flex items-center gap-3 border-t border-sidebar-border pt-4"><Avatar initials={initials} small /><span className="min-w-0 flex-1 truncate text-sm font-bold">{displayName}</span><Settings2 className="h-4 w-4 text-sidebar-foreground/50" /></Link><button type="button" data-testid="button-logout" onClick={() => { clearEduVerseRole(); void signOut({ redirectUrl: '/' }); }} className="w-full rounded-xl px-3 py-2 text-left text-xs font-bold text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground">Log out</button></div>
+      <div className="mt-auto space-y-3">{role === 'student' && <Link href="/ask" data-testid="link-ask" className="group flex items-center gap-3 rounded-xl border border-sidebar-border bg-sidebar-accent/70 px-3 py-3 text-sm font-semibold hover:bg-sidebar-accent"><MessageCircle className="h-[18px] w-[18px] text-sidebar-primary" /><span>Ask eduGPT</span><ArrowRight className="ml-auto h-4 w-4 opacity-50 transition-transform group-hover:translate-x-1" /></Link>}<Link href="/profile" data-testid="link-profile" className="flex items-center gap-3 border-t border-sidebar-border pt-4"><Avatar initials={initials} small /><span className="min-w-0 flex-1 truncate text-sm font-bold">{displayName}</span><Settings2 className="h-4 w-4 text-sidebar-foreground/50" /></Link><button type="button" data-testid="button-logout" onClick={() => { clearEduVerseRole(); void supabase.auth.signOut(); }} className="w-full rounded-xl px-3 py-2 text-left text-xs font-bold text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground">Log out</button></div>
     </aside>
     {mobileOpen && <button aria-label="Close navigation" data-testid="button-close-menu" onClick={() => setMobileOpen(false)} className="fixed inset-0 z-30 bg-primary/25 md:hidden" />}
      <div className="md:pl-[248px]"><header className="sticky top-0 z-20 flex h-[72px] items-center justify-between border-b border-border/70 bg-background/90 px-5 backdrop-blur-md md:px-10"><button data-testid="button-open-menu" onClick={() => setMobileOpen(true)} className="rounded-lg p-2 hover:bg-muted md:hidden"><Menu className="h-5 w-5" /></button><div className="hidden items-center gap-2 text-sm text-muted-foreground md:flex"><span className="h-2 w-2 rounded-full bg-accent" /> A little progress, every day.</div><div className="ml-auto flex items-center gap-3"><Link href="/ask" data-testid="link-header-ask" className="hidden rounded-xl p-2 text-muted-foreground hover:bg-muted hover:text-foreground sm:block"><MessageCircle className="h-5 w-5" /></Link><Link href="/profile" data-testid="link-header-profile"><Avatar initials={initials} small /></Link></div></header><main className="mx-auto max-w-[1400px] px-5 py-8 md:px-10 md:py-10">{children}</main></div>

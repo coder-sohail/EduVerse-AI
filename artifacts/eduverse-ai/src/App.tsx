@@ -1,9 +1,8 @@
-import { type ReactNode, useMemo } from 'react';
-import { ClerkProvider, SignIn, SignUp, useAuth } from '@clerk/react';
-import { publishableKeyFromHost } from '@clerk/react/internal';
-import { shadcn } from '@clerk/themes';
+import { type FormEvent, type ReactNode, useEffect, useMemo, useState } from 'react';
 import { Link, Redirect, Route, Router as WouterRouter, Switch, useLocation } from 'wouter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ArrowRight, BookOpen, GraduationCap, Loader2, School, Sparkles } from 'lucide-react';
+import { setAuthTokenGetter } from '@workspace/api-client-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -11,72 +10,10 @@ import NotFound from '@/pages/not-found';
 import { CareersPage, DashboardPage, LearnPage, PlannerPage, ProfilePage, RoadmapPage, Shell, SkillsPage, AskPage } from '@/components/eduverse-app';
 import { CommunityPage, OpportunitiesPage, RefreshmentPage, TeacherPage } from '@/pages/extended-pages';
 import { clearEduVerseRole, getEduVerseRole, setEduVerseRole, type EduVerseRole } from '@/lib/auth';
-import { ArrowRight, BookOpen, GraduationCap, School, Sparkles } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 const queryClient = new QueryClient();
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
-const clerkPubKey = publishableKeyFromHost(
-  window.location.hostname,
-  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
-);
-const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
-
-if (!clerkPubKey) {
-  throw new Error('Missing VITE_CLERK_PUBLISHABLE_KEY in .env file');
-}
-
-const clerkAppearance = {
-  theme: shadcn,
-  cssLayerName: 'clerk',
-  options: {
-    logoPlacement: 'inside' as const,
-    logoLinkUrl: basePath || '/',
-    logoImageUrl: `${window.location.origin}${basePath}/logo.svg`,
-  },
-  variables: {
-    colorPrimary: '#234d40',
-    colorForeground: '#234d40',
-    colorMutedForeground: '#61746c',
-    colorDanger: '#c96052',
-    colorBackground: '#faf7ef',
-    colorInput: '#f4efe4',
-    colorInputForeground: '#234d40',
-    colorNeutral: '#d9cfbd',
-    fontFamily: 'Plus Jakarta Sans, sans-serif',
-    borderRadius: '1rem',
-  },
-  elements: {
-    rootBox: 'w-full flex justify-center',
-    cardBox: 'bg-[#faf7ef] rounded-2xl w-[440px] max-w-full overflow-hidden',
-    card: '!shadow-none !border-0 !bg-transparent !rounded-none',
-    footer: '!shadow-none !border-0 !bg-transparent !rounded-none',
-    headerTitle: 'text-[#234d40] font-bold',
-    headerSubtitle: 'text-[#61746c]',
-    socialButtonsBlockButtonText: 'text-[#234d40] font-semibold',
-    formFieldLabel: 'text-[#234d40] font-semibold',
-    footerActionLink: 'text-[#234d40] font-bold',
-    footerActionText: 'text-[#61746c]',
-    dividerText: 'text-[#61746c]',
-    identityPreviewEditButton: 'text-[#234d40]',
-    formFieldSuccessText: 'text-[#234d40]',
-    alertText: 'text-[#8b3e36]',
-    logoBox: 'mb-5',
-    logoImage: 'max-h-12',
-    socialButtonsBlockButton: 'border-[#d9cfbd] bg-[#f4efe4] hover:bg-[#eee5d4]',
-    formButtonPrimary: 'bg-[#234d40] text-[#faf7ef] hover:bg-[#183b31]',
-    formFieldInput: 'border-[#d9cfbd] bg-[#f4efe4] text-[#234d40]',
-    footerAction: 'bg-transparent',
-    dividerLine: 'bg-[#d9cfbd]',
-    alert: 'border-[#edc4bd] bg-[#fff3f0]',
-    otpCodeFieldInput: 'border-[#d9cfbd] bg-[#f4efe4] text-[#234d40]',
-    formFieldRow: 'mb-4',
-    main: 'gap-5',
-  },
-};
-
-function stripBase(path: string) {
-  return basePath && path.startsWith(basePath) ? path.slice(basePath.length) || '/' : path;
-}
 
 function AuthLoading() {
   return <div className="grid min-h-[100dvh] place-items-center bg-background"><Sparkles className="h-6 w-6 animate-pulse text-primary" /></div>;
@@ -149,79 +86,109 @@ function LandingPage() {
   );
 }
 
-function SignInPage() {
-  return <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4 py-8"><SignIn routing="path" path={`${basePath}/sign-in`} signUpUrl={`${basePath}/sign-up`} fallbackRedirectUrl={`${basePath}/`} /></div>;
+function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
+  const [, setLocation] = useLocation();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [pending, setPending] = useState(false);
+  const isSignUp = mode === 'sign-up';
+
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    setError('');
+    setMessage('');
+    setPending(true);
+    const result = isSignUp
+      ? await supabase.auth.signUp({ email, password, options: { data: { role: getEduVerseRole() } } })
+      : await supabase.auth.signInWithPassword({ email, password });
+    setPending(false);
+    if (result.error) {
+      setError(result.error.message);
+      return;
+    }
+    if (isSignUp && !result.data.session) {
+      setMessage('Check your email to confirm your account, then return here to sign in.');
+      return;
+    }
+    setLocation(getEduVerseRole() === 'teacher' ? '/teacher' : '/');
+  };
+
+  const googleLogin = async () => {
+    setError('');
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}${basePath}/` },
+    });
+    if (oauthError) setError(oauthError.message);
+  };
+
+  return (
+    <main className="flex min-h-[100dvh] items-center justify-center bg-background px-5 py-10">
+      <div className="w-full max-w-md rounded-3xl border border-border bg-card p-7 shadow-xl sm:p-9">
+        <Link href="/login" className="mb-8 inline-flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-accent text-primary"><GraduationCap className="h-5 w-5" /></span><span className="font-serif text-2xl font-bold">EduVerse</span></Link>
+        <p className="text-[11px] font-extrabold uppercase tracking-[.2em] text-muted-foreground">{getEduVerseRole()} account</p>
+        <h1 className="mt-2 font-serif text-4xl font-bold">{isSignUp ? 'Create your account.' : 'Welcome back.'}</h1>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">{isSignUp ? 'Start your next chapter with a workspace shaped around your role.' : 'Sign in to continue your EduVerse journey.'}</p>
+        <button type="button" data-testid="button-google-auth" onClick={googleLogin} className="mt-7 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border bg-muted/50 text-sm font-bold hover:bg-muted">Continue with Google</button>
+        <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />or<span className="h-px flex-1 bg-border" /></div>
+        <form onSubmit={submit} className="space-y-4">
+          <label className="block text-sm font-bold">Email<input data-testid="input-auth-email" type="email" required autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-border bg-background px-3 text-sm font-normal outline-none focus:border-primary" /></label>
+          <label className="block text-sm font-bold">Password<input data-testid="input-auth-password" type="password" required minLength={6} autoComplete={isSignUp ? 'new-password' : 'current-password'} value={password} onChange={(event) => setPassword(event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-border bg-background px-3 text-sm font-normal outline-none focus:border-primary" /></label>
+          {error && <p data-testid="status-auth-error" className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
+          {message && <p data-testid="status-auth-message" className="rounded-xl bg-accent/25 p-3 text-sm text-primary">{message}</p>}
+          <button type="submit" data-testid="button-submit-auth" disabled={pending} className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60">{pending && <Loader2 className="h-4 w-4 animate-spin" />}{isSignUp ? 'Create account' : 'Sign in'}</button>
+        </form>
+        <p className="mt-6 text-center text-sm text-muted-foreground">{isSignUp ? 'Already have an account?' : 'Don’t have an account?'} <button type="button" onClick={() => setLocation(isSignUp ? '/sign-in' : '/sign-up')} className="font-bold text-primary hover:underline">{isSignUp ? 'Sign in' : 'Sign up'}</button></p>
+      </div>
+    </main>
+  );
 }
 
-function SignUpPage() {
-  return <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4 py-8"><SignUp routing="path" path={`${basePath}/sign-up`} signInUrl={`${basePath}/sign-in`} fallbackRedirectUrl={`${basePath}/`} /></div>;
-}
-
-function AppRouter() {
-  const { isLoaded, isSignedIn } = useAuth();
+function AppRouter({ sessionReady, signedIn }: { sessionReady: boolean; signedIn: boolean }) {
   const [location] = useLocation();
   const role = getEduVerseRole();
   const publicPath = useMemo(() => location === '/' || location === '/login' || location.startsWith('/sign-in') || location.startsWith('/sign-up'), [location]);
 
-  if (!isLoaded) return <AuthLoading />;
-  if (!isSignedIn) {
+  if (!sessionReady) return <AuthLoading />;
+  if (!signedIn) {
     if (!publicPath) return <Redirect to="/login" />;
-    return <Switch><Route path="/" component={LandingPage} /><Route path="/login" component={LoginPage} /><Route path="/sign-in/*?" component={SignInPage} /><Route path="/sign-up/*?" component={SignUpPage} /><Route component={LandingPage} /></Switch>;
+    return <Switch><Route path="/" component={LandingPage} /><Route path="/login" component={LoginPage} /><Route path="/sign-in/*?" component={() => <AuthPage mode="sign-in" />} /><Route path="/sign-up/*?" component={() => <AuthPage mode="sign-up" />} /><Route component={LandingPage} /></Switch>;
   }
-
   if (location === '/login' || location.startsWith('/sign-in') || location.startsWith('/sign-up')) return <Redirect to={role === 'teacher' ? '/teacher' : '/'} />;
   if (role === 'teacher' && !['/teacher', '/profile'].includes(location)) return <Redirect to="/teacher" />;
   if (role === 'student' && location === '/teacher') return <Redirect to="/" />;
-
-  return (
-    <ErrorBoundary resetKey={location}>
-      <Shell>
-        <Switch>
-          <Route path="/" component={DashboardPage} />
-          <Route path="/learn" component={LearnPage} />
-          <Route path="/planner" component={PlannerPage} />
-          <Route path="/careers" component={CareersPage} />
-          <Route path="/roadmap" component={RoadmapPage} />
-          <Route path="/skills" component={SkillsPage} />
-          <Route path="/ask" component={AskPage} />
-          <Route path="/profile" component={ProfilePage} />
-          <Route path="/opportunities" component={OpportunitiesPage} />
-          <Route path="/community" component={CommunityPage} />
-          <Route path="/refreshment" component={RefreshmentPage} />
-          <Route path="/teacher" component={TeacherPage} />
-          <Route component={NotFound} />
-        </Switch>
-      </Shell>
-    </ErrorBoundary>
-  );
-}
-
-function ClerkApp() {
-  const [, setLocation] = useLocation();
-  return (
-    <ClerkProvider
-      publishableKey={clerkPubKey}
-      proxyUrl={clerkProxyUrl}
-      appearance={clerkAppearance}
-      signInUrl={`${basePath}/sign-in`}
-      signUpUrl={`${basePath}/sign-up`}
-      localization={{
-        signIn: { start: { title: 'Welcome back', subtitle: 'Sign in to continue your EduVerse journey' } },
-        signUp: { start: { title: 'Create your EduVerse account', subtitle: 'Choose a role and start your next chapter' } },
-      }}
-      routerPush={(to) => setLocation(stripBase(to))}
-      routerReplace={(to) => setLocation(stripBase(to), { replace: true })}
-    >
-      <QueryClientProvider client={queryClient}>
-        <AppRouter />
-        <Toaster />
-      </QueryClientProvider>
-    </ClerkProvider>
-  );
+  return <ErrorBoundary resetKey={location}><Shell><Switch><Route path="/" component={DashboardPage} /><Route path="/learn" component={LearnPage} /><Route path="/planner" component={PlannerPage} /><Route path="/careers" component={CareersPage} /><Route path="/roadmap" component={RoadmapPage} /><Route path="/skills" component={SkillsPage} /><Route path="/ask" component={AskPage} /><Route path="/profile" component={ProfilePage} /><Route path="/opportunities" component={OpportunitiesPage} /><Route path="/community" component={CommunityPage} /><Route path="/refreshment" component={RefreshmentPage} /><Route path="/teacher" component={TeacherPage} /><Route component={NotFound} /></Switch></Shell></ErrorBoundary>;
 }
 
 function App() {
-  return <TooltipProvider><WouterRouter base={basePath}><ClerkApp /></WouterRouter></TooltipProvider>;
+  const [sessionReady, setSessionReady] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return;
+      setSignedIn(Boolean(data.session));
+      setSessionReady(true);
+    });
+    setAuthTokenGetter(async () => {
+      const { data } = await supabase.auth.getSession();
+      return data.session?.access_token ?? null;
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSignedIn(Boolean(session));
+      setSessionReady(true);
+    });
+    return () => {
+      mounted = false;
+      listener.subscription.unsubscribe();
+      setAuthTokenGetter(null);
+    };
+  }, []);
+
+  return <TooltipProvider><WouterRouter base={basePath}><QueryClientProvider client={queryClient}><AppRouter sessionReady={sessionReady} signedIn={signedIn} /><Toaster /></QueryClientProvider></WouterRouter></TooltipProvider>;
 }
 
 export default App;
