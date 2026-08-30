@@ -1,1 +1,2 @@
 - [EduVerse API codegen](eduverse-build-notes.md) — keep generated Zod validators compatible with the installed runtime; integer schemas currently need OpenAPI number types.
+- [Supabase connector](supabase-connector.md) — the managed connection’s proxy path is already rooted at PostgREST, so database requests start with `/table`, not `/rest/v1/table`.

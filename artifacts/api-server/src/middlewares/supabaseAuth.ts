@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import type { User } from "@supabase/supabase-js";
-import { supabase } from "../lib/supabase";
+import { supabase, supabaseDatabaseRequest } from "../lib/supabase";
 
 declare global {
   namespace Express {
@@ -30,17 +30,18 @@ export async function requireSupabaseAuth(
     return;
   }
 
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", data.user.id)
-    .maybeSingle();
+  const profileResponse = await supabaseDatabaseRequest(
+    `/profiles?select=role&id=eq.${encodeURIComponent(data.user.id)}&limit=1`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
 
-  if (profileError) {
+  if (!profileResponse.ok) {
     res.status(500).json({ error: "Unable to load Supabase profile" });
     return;
   }
 
+  const profiles = (await profileResponse.json()) as Array<{ role?: string }>;
+  const profile = profiles[0];
   req.supabaseUser = data.user;
   req.supabaseRole = profile?.role === "teacher" || profile?.role === "student"
     ? profile.role
