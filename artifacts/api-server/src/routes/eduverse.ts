@@ -17,6 +17,7 @@ import {
   UpdateStudyTaskBody,
   UpdateStudyTaskParams,
 } from "@workspace/api-zod";
+import { requireTeacher } from "../middlewares/supabaseAuth";
 
 type TaskStatus = "todo" | "in_progress" | "completed";
 type MilestoneStatus = "completed" | "active" | "locked";
@@ -641,6 +642,6 @@ router.patch("/community/posts/:id/like", (req: Request, res: Response) => {
 
 router.get("/refreshment/quizzes", (_req, res) => res.json(quizzes));
 
-router.get("/teacher/dashboard", (_req, res) => res.json(teacherDashboard));
+router.get("/teacher/dashboard", requireTeacher, (_req, res) => res.json(teacherDashboard));
 
 export default router;

@@ -9,8 +9,8 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import { CareersPage, DashboardPage, LearnPage, PlannerPage, ProfilePage, RoadmapPage, Shell, SkillsPage, AskPage } from '@/components/eduverse-app';
 import { CommunityPage, OpportunitiesPage, RefreshmentPage, TeacherPage } from '@/pages/extended-pages';
-import { clearEduVerseRole, getEduVerseRole, setEduVerseRole, type EduVerseRole } from '@/lib/auth';
-import { supabase } from '@/lib/supabase';
+import { getEduVerseRole, setEduVerseRole, type EduVerseRole } from '@/lib/auth';
+import { getStoredRole, saveCurrentProfile, supabase } from '@/lib/supabase';
 
 const queryClient = new QueryClient();
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -112,6 +112,14 @@ function AuthPage({ mode }: { mode: 'sign-in' | 'sign-up' }) {
       setMessage('Check your email to confirm your account, then return here to sign in.');
       return;
     }
+    if (result.data.session) {
+      const savedRole = await getStoredRole();
+      if (savedRole) {
+        setEduVerseRole(savedRole);
+      } else {
+        await saveCurrentProfile(getEduVerseRole());
+      }
+    }
     setLocation(getEduVerseRole() === 'teacher' ? '/teacher' : '/');
   };
 
@@ -165,12 +173,27 @@ function AppRouter({ sessionReady, signedIn }: { sessionReady: boolean; signedIn
 function App() {
   const [sessionReady, setSessionReady] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
+  const [accountError, setAccountError] = useState('');
 
   useEffect(() => {
     let mounted = true;
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(async ({ data, error }) => {
       if (!mounted) return;
+      if (error) {
+        setAccountError(error.message);
+      } else if (data.session) {
+        try {
+          const savedRole = await getStoredRole();
+          if (savedRole) setEduVerseRole(savedRole);
+        } catch (profileError) {
+          setAccountError(profileError instanceof Error ? profileError.message : 'Unable to load your profile.');
+        }
+      }
       setSignedIn(Boolean(data.session));
+      setSessionReady(true);
+    }).catch((error: unknown) => {
+      if (!mounted) return;
+      setAccountError(error instanceof Error ? error.message : 'Unable to load your account.');
       setSessionReady(true);
     });
     setAuthTokenGetter(async () => {
@@ -188,6 +211,9 @@ function App() {
     };
   }, []);
 
+  if (accountError) {
+    return <main className="grid min-h-[100dvh] place-items-center bg-background px-6"><div className="max-w-md rounded-2xl border border-destructive/30 bg-card p-6 text-center"><h1 className="font-serif text-2xl font-bold">Profile setup needed</h1><p className="mt-2 text-sm leading-6 text-muted-foreground">{accountError}</p><a href={`${basePath}/login`} className="mt-5 inline-flex rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">Return to login</a></div></main>;
+  }
   return <TooltipProvider><WouterRouter base={basePath}><QueryClientProvider client={queryClient}><AppRouter sessionReady={sessionReady} signedIn={signedIn} /><Toaster /></QueryClientProvider></WouterRouter></TooltipProvider>;
 }
 
